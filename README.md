@@ -38,8 +38,8 @@ tox
 # Deploy to a local Anki installation
 ./deploy_locally.sh ~/.local/share/Anki2/addons21/extra_browser_columns
 
-# Bump version
-bump-my-version bump patch   # or minor / major
+# Release (bump, tag, build, push, GitHub Release; AnkiWeb upload is manual): "/release" skill
+# Versions: X.Y.Z.dev0 while developing; releasing X.Y.Z switches to X.Y.(Z+1).dev0
 
 # Scan with SonarQube locally (needs "sonar-scanner" with "sonar.token" in its "sonar-scanner.properties")
 tox && sonar-scanner

@@ -13,6 +13,8 @@ Target Anki version: 26.09.4.
 - Commit or push only when asked.
 - The `/push` skill pushes `main`, checks GitHub Actions and SonarCloud results and fixes the issues found;
   invoking it is an explicit request to commit and push those fixes.
+- The `/release` skill releases a version (needs `main` pushed with green CI and an "unreleased" CHANGELOG
+  section with entries); invoking it is an explicit request to commit, tag and push the release.
 
 ## Commands
 
@@ -30,8 +32,8 @@ pytest tests/column_hooks_test.py::test_add_columns
 # Deploy to the local Anki (also available as the "/deploy-locally" skill)
 ./deploy_locally.sh ~/.local/share/Anki2/addons21/extra_browser_columns
 
-# Bump version
-bump-my-version bump patch   # or minor / major
+# Release (bump, tag, build, push, GitHub Release; AnkiWeb upload is manual): "/release" skill
+# Versions: X.Y.Z.dev0 while developing; releasing X.Y.Z switches to X.Y.(Z+1).dev0
 ```
 
 ## Architecture
