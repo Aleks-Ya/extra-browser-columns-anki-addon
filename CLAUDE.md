@@ -13,8 +13,9 @@ Target Anki version: 26.09.4.
 - Commit or push only when asked.
 - The `/push` skill pushes `main`, checks GitHub Actions and SonarCloud results and fixes the issues found;
   invoking it is an explicit request to commit and push those fixes.
-- The `/release` skill releases a version (needs `main` pushed with green CI and an "unreleased" CHANGELOG
-  section with entries); invoking it is an explicit request to commit, tag and push the release.
+- The `/release` skill releases a version (needs `main` pushed with green CI; drafts the "unreleased" CHANGELOG
+  entries from the commits when the section is empty); invoking it is an explicit request to commit, tag and push
+  the release.
 
 ## Commands
 
