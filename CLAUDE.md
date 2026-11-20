@@ -29,6 +29,8 @@ pytest tests/column_hooks_test.py::test_add_columns
 # Build the .ankiaddon file into "dist/" (runs tests first; "--skip-tests" skips them)
 ./build_dist.sh
 
+# Build interactively: suggests the version (last release tag or working tree): "/build-distribution" skill
+
 # Deploy to the local Anki (also available as the "/deploy-locally" skill)
 ./deploy_locally.sh ~/.local/share/Anki2/addons21/extra_browser_columns
 
