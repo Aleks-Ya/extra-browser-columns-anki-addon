@@ -13,11 +13,17 @@ log: Logger = logging.getLogger(__name__)
 
 class ColumnHooks:
     __columns: dict[str, tuple[ColumnType, str, str]] = {
+        "extra-browser-columns-new": (ColumnType.NEW, "New", "Card is new"),
+        "extra-browser-columns-learning": (ColumnType.LEARNING, "Learning", "Card is in learning"),
+        "extra-browser-columns-review": (ColumnType.REVIEW, "Review", "Card is in review"),
         "extra-browser-columns-suspended": (ColumnType.SUSPENDED, "Suspended", "Card is suspended"),
         "extra-browser-columns-buried": (ColumnType.BURIED, "Buried", "Card is buried"),
         "extra-browser-columns-marked": (ColumnType.MARKED, "Marked", "Note is marked"),
     }
     __notes_mode_tooltips: dict[ColumnType, str] = {
+        ColumnType.NEW: "Note has new cards",
+        ColumnType.LEARNING: "Note has learning cards",
+        ColumnType.REVIEW: "Note has review cards",
         ColumnType.SUSPENDED: "Note has suspended cards",
         ColumnType.BURIED: "Note has buried cards",
         ColumnType.MARKED: "Note is marked",

@@ -2,6 +2,7 @@ from typing import Sequence
 
 from anki.cards import CardId
 from anki.collection import BrowserColumns, Collection
+from anki.consts import CARD_TYPE_LRN, QUEUE_TYPE_LRN, CARD_TYPE_REV, QUEUE_TYPE_REV
 from anki.notes import Note
 from aqt import gui_hooks
 from aqt.browser import Column, ItemId, CellRow, SearchContext
@@ -9,8 +10,11 @@ from mock.mock import MagicMock
 
 from extra_browser_columns.column_hooks import ColumnHooks
 from extra_browser_columns.column_values import ColumnValues
-from tests.conftest import assert_no_hooks, create_note
+from tests.conftest import assert_no_hooks, create_note, set_card_state
 
+new_key: str = "extra-browser-columns-new"
+learning_key: str = "extra-browser-columns-learning"
+review_key: str = "extra-browser-columns-review"
 suspended_key: str = "extra-browser-columns-suspended"
 buried_key: str = "extra-browser-columns-buried"
 marked_key: str = "extra-browser-columns-marked"
@@ -47,6 +51,9 @@ def test_add_columns(column_hooks: ColumnHooks):
     columns: dict[str, Column] = {}
     gui_hooks.browser_did_fetch_columns(columns)
     assert columns == {
+        new_key: __column(new_key, "New", "Card is new", "Note has new cards"),
+        learning_key: __column(learning_key, "Learning", "Card is in learning", "Note has learning cards"),
+        review_key: __column(review_key, "Review", "Card is in review", "Note has review cards"),
         suspended_key: __column(suspended_key, "Suspended", "Card is suspended", "Note has suspended cards"),
         buried_key: __column(buried_key, "Buried", "Card is buried", "Note has buried cards"),
         marked_key: __column(marked_key, "Marked", "Note is marked", "Note is marked"),
@@ -54,7 +61,7 @@ def test_add_columns(column_hooks: ColumnHooks):
 
 
 def __fetch_row(item_id: ItemId, is_note: bool) -> list[str]:
-    columns: Sequence[str] = ["noteFld", suspended_key, buried_key, marked_key]
+    columns: Sequence[str] = ["noteFld", new_key, learning_key, review_key, suspended_key, buried_key, marked_key]
     row: CellRow = CellRow.generic(len(columns), "init text")
     gui_hooks.browser_did_fetch_row(item_id, is_note, row, columns)
     return [cell.text for cell in row.cells]
@@ -67,9 +74,13 @@ def test_modify_row_cards_mode(col: Collection, column_hooks: ColumnHooks):
     suspended_card, buried_card = marked_note.card_ids()
     col.sched.suspend_cards([suspended_card])
     col.sched.bury_cards([buried_card])
-    assert __fetch_row(plain_note.card_ids()[0], is_note=False) == ["init text", "", "", ""]
-    assert __fetch_row(suspended_card, is_note=False) == ["init text", "✓", "", "✓"]
-    assert __fetch_row(buried_card, is_note=False) == ["init text", "", "✓", "✓"]
+    learning_card, review_card = plain_note.card_ids()
+    set_card_state(col, learning_card, CARD_TYPE_LRN, QUEUE_TYPE_LRN)
+    set_card_state(col, review_card, CARD_TYPE_REV, QUEUE_TYPE_REV)
+    assert __fetch_row(learning_card, is_note=False) == ["init text", "", "✓", "", "", "", ""]
+    assert __fetch_row(review_card, is_note=False) == ["init text", "", "", "✓", "", "", ""]
+    assert __fetch_row(suspended_card, is_note=False) == ["init text", "✓", "", "", "✓", "", "✓"]
+    assert __fetch_row(buried_card, is_note=False) == ["init text", "✓", "", "", "", "✓", "✓"]
 
 
 # noinspection PyUnusedLocal
@@ -78,9 +89,11 @@ def test_modify_row_notes_mode(col: Collection, column_hooks: ColumnHooks):
     suspended_note: Note = create_note(col, "suspended")
     marked_note: Note = create_note(col, "marked", tags=["marked"])
     col.sched.suspend_cards([suspended_note.card_ids()[0]])
-    assert __fetch_row(plain_note.id, is_note=True) == ["init text", "", "", ""]
-    assert __fetch_row(suspended_note.id, is_note=True) == ["init text", "✓", "", ""]
-    assert __fetch_row(marked_note.id, is_note=True) == ["init text", "", "", "✓"]
+    for card_id in marked_note.card_ids():
+        set_card_state(col, card_id, CARD_TYPE_REV, QUEUE_TYPE_REV)
+    assert __fetch_row(plain_note.id, is_note=True) == ["init text", "✓", "", "", "", "", ""]
+    assert __fetch_row(suspended_note.id, is_note=True) == ["init text", "✓", "", "", "✓", "", ""]
+    assert __fetch_row(marked_note.id, is_note=True) == ["init text", "", "", "✓", "", "", "✓"]
 
 
 def __search(col: Collection, column_key: str, is_note: bool, reverse: bool) -> Sequence[ItemId]:
@@ -121,6 +134,19 @@ def test_sort_cards_mode(col: Collection, column_hooks: ColumnHooks):
     assert set(ids[1:]) == set(note_a.card_ids()) | {note_b.card_ids()[0]}
     ids = __search(col, suspended_key, is_note=False, reverse=False)
     assert ids[-1] == suspended_card
+
+
+# noinspection PyUnusedLocal
+def test_sort_cards_mode_review(col: Collection, column_hooks: ColumnHooks):
+    note_a: Note = create_note(col, "a")
+    note_b: Note = create_note(col, "b")
+    review_card: ItemId = note_a.card_ids()[0]
+    set_card_state(col, review_card, CARD_TYPE_REV, QUEUE_TYPE_REV)
+    ids: Sequence[ItemId] = __search(col, review_key, is_note=False, reverse=True)
+    assert ids[0] == review_card
+    assert set(ids[1:]) == {note_a.card_ids()[1]} | set(note_b.card_ids())
+    ids = __search(col, review_key, is_note=False, reverse=False)
+    assert ids[-1] == review_card
 
 
 # noinspection PyUnusedLocal

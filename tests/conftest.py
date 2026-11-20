@@ -3,6 +3,7 @@ from typing import Generator
 
 import pytest
 from anki.collection import Collection
+from anki.cards import CardId
 from anki.models import NotetypeDict
 from anki.notes import Note
 from aqt import gui_hooks
@@ -40,6 +41,11 @@ def create_note(col: Collection, front: str, tags: list[str] = None) -> Note:
     note.tags = tags if tags else []
     col.add_note(note, col.decks.id_for_name("Default"))
     return note
+
+
+def set_card_state(col: Collection, card_id: CardId, card_type: int, queue: int) -> None:
+    """Sets the card type and queue directly (e.g. to make a learning card without reviewing it)."""
+    col.db.execute("update cards set type = ?, queue = ? where id = ?", card_type, queue, card_id)
 
 
 def assert_no_hooks() -> None:

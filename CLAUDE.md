@@ -4,7 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Extra Browser Columns is an Anki addon that adds sortable "Suspended", "Buried" and "Marked" columns to the Browser.
+Extra Browser Columns is an Anki addon that adds sortable "New", "Learning", "Review", "Suspended",
+"Buried" and "Marked" columns to the Browser.
 Target Anki version: 26.09.4.
 
 ## Git
@@ -48,8 +49,9 @@ pytest tests/column_hooks_test.py::test_add_columns
   "Sort Field" column and stores our column key in `context.addon_metadata`; `browser_did_search` re-sorts
   `context.ids` so flagged items go first (descending).
 - `extra_browser_columns/column_values.py` — `ColumnValues`: per-row flag checks via SQL on `cards`/`notes`, and sets
-  of flagged ids for sorting via Anki searches (`is:suspended`, `is:buried`, `tag:marked`). In notes mode a note is
-  suspended/buried if any of its cards is.
+  of flagged ids for sorting via Anki searches (`is:new`, `is:learn`, `is:review`, `is:suspended`, `is:buried`,
+  `tag:marked`). New/Learning/Review use `cards.type` (relearning counts as both Learning and Review, like the searches),
+  Suspended/Buried use `cards.queue`. In notes mode a note is flagged if any of its cards is.
 - `build_dist.py` — packages the addon and generates `manifest.json` (version from `extra_browser_columns/version.txt`).
 
 ## CI

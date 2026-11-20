@@ -1,13 +1,19 @@
 # Extra Browser Columns Anki addon
 
 An addon for [Anki](https://apps.ankiweb.net) flashcard program
-that adds 3 sortable columns to the Browser:
+that adds 6 sortable columns to the Browser:
 
 | Column    | Cards mode                 | Notes mode                                  |
 |-----------|----------------------------|---------------------------------------------|
+| New       | `✓` if the card is new       | `✓` if any card of the note is new         |
+| Learning  | `✓` if the card is in learning or relearning | `✓` if any card of the note is in learning or relearning |
+| Review    | `✓` if the card is in review or relearning | `✓` if any card of the note is in review or relearning |
 | Suspended | `✓` if the card is suspended | `✓` if any card of the note is suspended   |
 | Buried    | `✓` if the card is buried (manually or by siblings) | `✓` if any card of the note is buried |
 | Marked    | `✓` if the note has the `marked` tag | `✓` if the note has the `marked` tag |
+
+The New, Learning and Review columns match the "Card State" filters of the Browser sidebar
+(`is:new`, `is:learn`, `is:review`), so a relearning card is both Learning and Review.
 
 Enable a column: right-click the Browser table header and choose the column.
 Click a column header to sort: flagged items are listed first (click again to reverse);
