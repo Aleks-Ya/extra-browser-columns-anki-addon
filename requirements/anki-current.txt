@@ -1,0 +1,14 @@
+# The target Anki version (26.09.4)
+
+# https://pypi.org/project/anki/#history
+anki==26.9.4
+
+# https://pypi.org/project/aqt/#history
+aqt==26.9.4
+
+# "qt" extra of https://pypi.org/project/aqt/26.9.4/
+pyqt6==6.11.0
+pyqt6-qt6==6.11.2
+pyqt6-webengine==6.11.0
+pyqt6-webengine-qt6==6.11.2
+pyqt6_sip==13.12.0

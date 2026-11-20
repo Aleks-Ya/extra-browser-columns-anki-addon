@@ -1,0 +1,9 @@
+.idea
+.venv
+*.log
+__pycache__
+.tox
+dist
+meta.json
+.coverage
+coverage.xml

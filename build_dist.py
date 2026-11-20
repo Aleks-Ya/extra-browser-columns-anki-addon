@@ -1,0 +1,94 @@
+from argparse import ArgumentParser, Namespace
+import json
+import os
+import shutil
+import subprocess
+from pathlib import Path
+from subprocess import CompletedProcess
+from typing import Any
+
+
+class DistributionBuilder:
+
+    def __init__(self, skip_unit_tests: bool):
+        self.project_dir: Path = Path(__file__).parent
+        self.build_dir: Path = Path(self.project_dir, 'dist')
+        self.skip_unit_tests: bool = skip_unit_tests
+        if self.build_dir.exists():
+            shutil.rmtree(self.build_dir)
+
+    def build(self) -> None:
+        self.__run_unit_tests()
+        self.__package_zip()
+
+    def __run_unit_tests(self) -> None:
+        if not self.skip_unit_tests:
+            print("Running unit tests...")
+            result: CompletedProcess[str] = subprocess.run(['tox'], capture_output=True, text=True)
+            if result.returncode != 0:
+                print(result.stderr)
+                print(result.stdout)
+                raise SystemExit(result.returncode)
+        else:
+            print("Skipping unit tests")
+
+    def __package_zip(self) -> None:
+        print("Packaging...")
+        addon_dir: str = 'extra_browser_columns'
+        addon_package_dir: Path = Path(self.project_dir, addon_dir)
+        dest_subdir: Path = Path(self.build_dir, addon_dir)
+        shutil.copytree(addon_package_dir, dest_subdir,
+                        ignore=shutil.ignore_patterns("*.log", "__pycache__", "meta.json"))
+        self.__generate_manifest(dest_subdir)
+        self.__copy_file_to_build("LICENSE", dest_subdir)
+        self.__copy_file_to_build("README.md", dest_subdir)
+        self.__copy_file_to_build("CHANGELOG.md", dest_subdir)
+        version: str = self._read_version()
+        output_zip: Path = Path(self.build_dir, f'extra-browser-columns-{version}')
+        actual_output_zip: Path = Path(shutil.make_archive(str(output_zip), 'zip', dest_subdir))
+        renamed_output_zip: Path = Path(actual_output_zip.parent, f"{actual_output_zip.stem}.ankiaddon")
+        os.rename(actual_output_zip, renamed_output_zip)
+        print(f'Output ZIP: {renamed_output_zip}')
+
+    def __copy_file_to_build(self, filename: str, dest_subdir) -> None:
+        src: Path = Path(self.project_dir, filename)
+        dest: Path = Path(dest_subdir, filename)
+        shutil.copyfile(src, dest)
+
+    @staticmethod
+    def __generate_manifest(dest_subdir: Path) -> None:
+        from git import TagReference, Repo, Commit
+        repo: Repo = Repo(".", search_parent_directories=True)
+        version: str = f"v{DistributionBuilder._read_version()}"
+        tag: TagReference = repo.tag(version)
+        commit: Commit = tag.commit if tag in repo.tags else repo.head.commit
+        commit_epoch_sec: int = int(commit.committed_datetime.timestamp())
+        draft: dict[str, Any] = {
+            "name": f"Extra Browser Columns {version}",
+            "package": "extra_browser_columns",
+            "author": "Alexey Yablokov",
+            "min_point_version": 260904,
+            "human_version": version,
+            "mod": commit_epoch_sec
+        }
+        path: Path = Path(dest_subdir, 'manifest.json')
+        with open(path, 'w') as fp:
+            # noinspection PyTypeChecker
+            json.dump(draft, fp, indent=2)
+
+    @staticmethod
+    def _read_version() -> str:
+        version_file: str = os.path.join(os.path.dirname(__file__), 'extra_browser_columns', 'version.txt')
+        with open(version_file, 'r') as f:
+            return f.read().strip()
+
+    @staticmethod
+    def parse_arguments() -> Namespace:
+        parser: ArgumentParser = ArgumentParser()
+        parser.add_argument('--skip_unit_tests', action='store_true')
+        return parser.parse_args()
+
+
+args: Namespace = DistributionBuilder.parse_arguments()
+dist_builder: DistributionBuilder = DistributionBuilder(skip_unit_tests=args.skip_unit_tests)
+dist_builder.build()
