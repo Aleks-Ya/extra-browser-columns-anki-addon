@@ -7,3 +7,4 @@ dist
 meta.json
 .coverage
 coverage.xml
+.scannerwork

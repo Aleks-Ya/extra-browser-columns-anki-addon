@@ -15,6 +15,14 @@ within each group items are ordered by the Sort Field.
 
 Supported Anki version: 26.09.4+
 
+## Quality metrics
+
+[![Unit-tests (Linux)](https://github.com/Aleks-Ya/extra-browser-columns-anki-addon/actions/workflows/unit-tests-linux.yml/badge.svg)](https://github.com/Aleks-Ya/extra-browser-columns-anki-addon/actions/workflows/unit-tests-linux.yml)
+[![Unit-tests (Windows)](https://github.com/Aleks-Ya/extra-browser-columns-anki-addon/actions/workflows/unit-tests-windows.yml/badge.svg)](https://github.com/Aleks-Ya/extra-browser-columns-anki-addon/actions/workflows/unit-tests-windows.yml)
+[![Unit-tests (MacOS)](https://github.com/Aleks-Ya/extra-browser-columns-anki-addon/actions/workflows/unit-tests-mac.yml/badge.svg)](https://github.com/Aleks-Ya/extra-browser-columns-anki-addon/actions/workflows/unit-tests-mac.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Aleks-Ya_extra-browser-columns-anki-addon&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Aleks-Ya_extra-browser-columns-anki-addon)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Aleks-Ya_extra-browser-columns-anki-addon&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Aleks-Ya_extra-browser-columns-anki-addon)
+
 ## Development
 
 ```bash
@@ -32,4 +40,9 @@ tox
 
 # Bump version
 bump-my-version bump patch   # or minor / major
+
+# Scan with SonarQube locally (needs "sonar-scanner" with "sonar.token" in its "sonar-scanner.properties")
+tox && sonar-scanner
 ```
+
+SonarQube report: [SonarCloud](https://sonarcloud.io/project/overview?id=Aleks-Ya_extra-browser-columns-anki-addon)

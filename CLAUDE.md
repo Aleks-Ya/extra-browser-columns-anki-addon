@@ -45,6 +45,12 @@ bump-my-version bump patch   # or minor / major
   suspended/buried if any of its cards is.
 - `build_dist.py` — packages the addon and generates `manifest.json` (version from `extra_browser_columns/version.txt`).
 
+## CI
+
+GitHub Actions (`.github/workflows/`) run `tox` on Linux, macOS and Windows on push/PR to `main`; the Linux job also
+runs the SonarCloud scan (`sonar-project.properties`, `coverage.xml` from tox, `SONAR_TOKEN` secret).
+Dependabot is disabled on purpose: dependency versions are dictated by Anki.
+
 ## Tests
 
 `tests/` uses pytest with a real temporary Anki `Collection` (`tests/conftest.py`); the Browser is a `MagicMock`.
