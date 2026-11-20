@@ -6,8 +6,8 @@ set -e
 dest=${1:-$HOME/.local/share/Anki2/addons21/extra_browser_columns}
 addons_dir=$(dirname "$dest")
 
-if [ ! -d "$addons_dir" ]; then
-    echo "ERROR: Anki addons folder absents: $addons_dir"
+if [[ ! -d "$addons_dir" ]]; then
+    echo "ERROR: Anki addons folder absents: $addons_dir" >&2
     exit 1
 fi
 
@@ -15,13 +15,13 @@ mkdir -p "$dest"
 ./deploy_locally.sh "$dest"
 
 for file in __init__.py column_hooks.py column_values.py version.txt; do
-    if [ ! -f "$dest/$file" ]; then
-        echo "ERROR: File was not deployed: $dest/$file"
+    if [[ ! -f "$dest/$file" ]]; then
+        echo "ERROR: File was not deployed: $dest/$file" >&2
         exit 1
     fi
 done
-if [ -n "$(find "$dest" -name __pycache__)" ]; then
-    echo "ERROR: __pycache__ was deployed: $dest"
+if [[ -n "$(find "$dest" -name __pycache__)" ]]; then
+    echo "ERROR: __pycache__ was deployed: $dest" >&2
     exit 1
 fi
 

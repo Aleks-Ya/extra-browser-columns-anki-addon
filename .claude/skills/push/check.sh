@@ -16,7 +16,8 @@ fail() {
 }
 
 sonar() {
-    curl -sSf "https://sonarcloud.io/api/$1" || fail "SonarCloud API request failed: $1"
+    local path=$1
+    curl -sSf "https://sonarcloud.io/api/$path" || fail "SonarCloud API request failed: $path"
 }
 
 echo "=== GitHub Actions: $sha ==="
