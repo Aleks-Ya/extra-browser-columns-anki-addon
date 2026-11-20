@@ -11,6 +11,8 @@ Target Anki version: 26.09.4.
 
 - Do not create feature branches unless explicitly asked: commit directly to the current branch (`main`).
 - Commit or push only when asked.
+- The `/push` skill pushes `main`, checks GitHub Actions and SonarCloud results and fixes the issues found;
+  invoking it is an explicit request to commit and push those fixes.
 
 ## Commands
 
