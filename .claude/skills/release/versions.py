@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Print the current version and the versions /release offers, or check a version the user typed.
 
 Candidates are the major, minor and patch versions after the last release tag (after 0.0.0 when there is no tag),
