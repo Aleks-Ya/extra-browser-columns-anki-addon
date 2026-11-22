@@ -105,7 +105,7 @@ class ColumnHooks:
     @staticmethod
     def __on_browser_will_show(browser: Browser) -> None:
         # Qt fits a column to the wider of its cells and its label on a header border double-click:
-        # fit our columns to their cells ("✓") instead (the label gets elided)
+        # fit our columns to their cells ("✓") instead (the label gets clipped)
         # noinspection PyProtectedMember
         view: QTableView = browser.table._view
         header: QHeaderView = view.horizontalHeader()
@@ -155,8 +155,13 @@ class ColumnHooks:
     def __fit_column_to_cells(browser: Browser, view: QTableView, header: QHeaderView, section: int) -> None:
         # noinspection PyProtectedMember
         column_key: str = browser.table._model.column_at_section(section).key
-        if column_key in ColumnHooks.__columns:
-            width: int = max(view.sizeHintForColumn(section), header.minimumSectionSize())
+        # An empty table has no cells to fit to: keep Qt's fit to the label
+        if column_key in ColumnHooks.__columns and view.model().rowCount() > 0:
+            width: int = view.sizeHintForColumn(section)
+            # "resizeSection" doesn't go below the minimum section size (Anki sets 50 px, wider than the "✓"):
+            # lower the minimum (it's saved with the header state, so it persists across Browser restarts)
+            if width < header.minimumSectionSize():
+                header.setMinimumSectionSize(width)
             log.debug(f"Fit column {column_key} to cells: {width}")
             header.resizeSection(section, width)
 

@@ -1,6 +1,7 @@
 # Changelog for "Extra Browser Columns" Anki addon
 
 ## v1.0.3 - unreleased
+1. __[BUGFIX]__ Double-click on a column's header border shrank the column only to 50 px instead of its `✓`
 
 ## [v1.0.2](https://github.com/Aleks-Ya/extra-browser-columns-anki-addon/releases/tag/v1.0.2) - 2026-11-22
 1. __[FEATURE]__ Double-click on a column's header border shrinks the column to its `✓` (the header shows the beginning of the name)

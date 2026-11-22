@@ -165,12 +165,13 @@ def test_sort_by_foreign_column(col: Collection, column_hooks: ColumnHooks):
     assert context.ids == ids
 
 
-def __double_click_header_border(column_key: str, content_width: int) -> MagicMock:
+def __double_click_header_border(column_key: str, content_width: int, row_count: int = 8) -> MagicMock:
     browser: MagicMock = MagicMock()
     browser.table._model.column_at_section.side_effect = \
         lambda section: MagicMock(key=column_key) if section == 3 else None
     view: MagicMock = browser.table._view
     view.sizeHintForColumn.return_value = content_width
+    view.model.return_value.rowCount.return_value = row_count
     header: MagicMock = view.horizontalHeader.return_value
     header.minimumSectionSize.return_value = 50
     gui_hooks.browser_will_show(browser)
@@ -182,9 +183,18 @@ def __double_click_header_border(column_key: str, content_width: int) -> MagicMo
 # noinspection PyUnusedLocal
 def test_fit_column_to_cells(column_hooks: ColumnHooks):
     header: MagicMock = __double_click_header_border(suspended_key, content_width=18)
-    header.resizeSection.assert_called_once_with(3, 50)
+    header.setMinimumSectionSize.assert_called_once_with(18)
+    header.resizeSection.assert_called_once_with(3, 18)
     header = __double_click_header_border(marked_key, content_width=70)
+    header.setMinimumSectionSize.assert_not_called()
     header.resizeSection.assert_called_once_with(3, 70)
+
+
+# noinspection PyUnusedLocal
+def test_fit_empty_column(column_hooks: ColumnHooks):
+    header: MagicMock = __double_click_header_border(suspended_key, content_width=1, row_count=0)
+    header.setMinimumSectionSize.assert_not_called()
+    header.resizeSection.assert_not_called()
 
 
 # noinspection PyUnusedLocal
