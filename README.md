@@ -18,6 +18,7 @@ The New, Learning and Review columns match the "Card State" filters of the Brows
 Enable a column: right-click the Browser table header and choose the column.
 Click a column header to sort: flagged items are listed first (click again to reverse);
 within each group items are ordered by the Sort Field.
+Double-click the right border of a column header to shrink the column to its `✓`.
 
 Supported Anki version: 26.09.4+
 

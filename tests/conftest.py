@@ -53,3 +53,4 @@ def assert_no_hooks() -> None:
     assert gui_hooks.browser_did_fetch_row.count() == 0
     assert gui_hooks.browser_will_search.count() == 0
     assert gui_hooks.browser_did_search.count() == 0
+    assert gui_hooks.browser_will_show.count() == 0

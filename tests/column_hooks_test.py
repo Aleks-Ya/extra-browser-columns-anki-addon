@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, Callable
 
 from anki.cards import CardId
 from anki.collection import BrowserColumns, Collection
@@ -28,6 +28,7 @@ def test_setup_hooks(col: Collection, column_values: ColumnValues):
     assert gui_hooks.browser_did_fetch_row.count() == 1
     assert gui_hooks.browser_will_search.count() == 1
     assert gui_hooks.browser_did_search.count() == 1
+    assert gui_hooks.browser_will_show.count() == 1
     column_hooks.remove_hooks()
     assert_no_hooks()
 
@@ -161,3 +162,31 @@ def test_sort_by_foreign_column(col: Collection, column_hooks: ColumnHooks):
     context.ids = ids
     gui_hooks.browser_did_search(context)
     assert context.ids == ids
+
+
+def __double_click_header_border(column_key: str, content_width: int) -> MagicMock:
+    browser: MagicMock = MagicMock()
+    browser.table._model.column_at_section.side_effect = \
+        lambda section: MagicMock(key=column_key) if section == 3 else None
+    view: MagicMock = browser.table._view
+    view.sizeHintForColumn.return_value = content_width
+    header: MagicMock = view.horizontalHeader.return_value
+    header.minimumSectionSize.return_value = 50
+    gui_hooks.browser_will_show(browser)
+    slot: Callable[[int], None] = header.sectionHandleDoubleClicked.connect.call_args.args[0]
+    slot(3)
+    return header
+
+
+# noinspection PyUnusedLocal
+def test_fit_column_to_cells(column_hooks: ColumnHooks):
+    header: MagicMock = __double_click_header_border(suspended_key, content_width=18)
+    header.resizeSection.assert_called_once_with(3, 50)
+    header = __double_click_header_border(marked_key, content_width=70)
+    header.resizeSection.assert_called_once_with(3, 70)
+
+
+# noinspection PyUnusedLocal
+def test_fit_foreign_column(column_hooks: ColumnHooks):
+    header: MagicMock = __double_click_header_border("noteFld", content_width=18)
+    header.resizeSection.assert_not_called()

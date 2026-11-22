@@ -5,6 +5,7 @@ from typing import Sequence, Optional, Callable
 from anki.collection import BrowserColumns, Collection
 from aqt import gui_hooks
 from aqt.browser import Browser, Column, SearchContext, ItemId, CellRow
+from aqt.qt import QTableView, QHeaderView, qconnect
 
 from .column_values import ColumnValues, ColumnType
 
@@ -40,6 +41,7 @@ class ColumnHooks:
             self.__modify_row
         self.__hook_browser_will_search: Callable[[SearchContext], None] = self.__on_browser_will_search
         self.__hook_browser_did_search: Callable[[SearchContext], None] = self.__on_browser_did_search
+        self.__hook_browser_will_show: Callable[[Browser], None] = ColumnHooks.__on_browser_will_show
         log.debug(f"{self.__class__.__name__} was instantiated")
 
     def setup_hooks(self) -> None:
@@ -47,6 +49,7 @@ class ColumnHooks:
         gui_hooks.browser_did_fetch_row.append(self.__hook_browser_did_fetch_row)
         gui_hooks.browser_will_search.append(self.__hook_browser_will_search)
         gui_hooks.browser_did_search.append(self.__hook_browser_did_search)
+        gui_hooks.browser_will_show.append(self.__hook_browser_will_show)
         log.info(f"{self.__class__.__name__} are set")
 
     def remove_hooks(self) -> None:
@@ -54,6 +57,7 @@ class ColumnHooks:
         gui_hooks.browser_did_fetch_row.remove(self.__hook_browser_did_fetch_row)
         gui_hooks.browser_will_search.remove(self.__hook_browser_will_search)
         gui_hooks.browser_did_search.remove(self.__hook_browser_did_search)
+        gui_hooks.browser_will_show.remove(self.__hook_browser_will_show)
         log.info(f"{self.__class__.__name__} are removed")
 
     @staticmethod
@@ -97,6 +101,25 @@ class ColumnHooks:
             is_note: bool = ColumnHooks.__is_notes_mode(context.browser)
             flagged_ids: set[ItemId] = self.__column_values.flagged_ids(column_type, is_note)
             context.ids = sorted(context.ids, key=lambda item_id: item_id in flagged_ids, reverse=context.reverse)
+
+    @staticmethod
+    def __on_browser_will_show(browser: Browser) -> None:
+        # Qt fits a column to the wider of its cells and its label on a header border double-click:
+        # fit our columns to their cells ("✓") instead (the label gets elided)
+        # noinspection PyProtectedMember
+        view: QTableView = browser.table._view
+        header: QHeaderView = view.horizontalHeader()
+        qconnect(header.sectionHandleDoubleClicked,
+                 lambda section: ColumnHooks.__fit_column_to_cells(browser, view, header, section))
+
+    @staticmethod
+    def __fit_column_to_cells(browser: Browser, view: QTableView, header: QHeaderView, section: int) -> None:
+        # noinspection PyProtectedMember
+        column_key: str = browser.table._model.column_at_section(section).key
+        if column_key in ColumnHooks.__columns:
+            width: int = max(view.sizeHintForColumn(section), header.minimumSectionSize())
+            log.debug(f"Fit column {column_key} to cells: {width}")
+            header.resizeSection(section, width)
 
     @staticmethod
     def __is_notes_mode(browser: Browser) -> bool:
