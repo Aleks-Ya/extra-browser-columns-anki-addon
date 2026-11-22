@@ -1,6 +1,8 @@
 **"Extra Browser Columns" addon adds 6 sortable columns to the Browser:
 "Marked", "New", "Learning", "Review", "Suspended" and "Buried".**
 
+![](https://raw.githubusercontent.com/Aleks-Ya/extra-browser-columns-anki-addon/main/docs/images/show-columns-menu-notes.png)
+
 ## Columns
 
 A column shows `✓` if the card (in Cards mode) or any card of the note (in Notes mode):
