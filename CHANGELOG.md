@@ -1,5 +1,7 @@
 # Changelog for "Extra Browser Columns" Anki addon
 
+## v1.0.4 - unreleased
+
 ## [v1.0.3](https://github.com/Aleks-Ya/extra-browser-columns-anki-addon/releases/tag/v1.0.3) - 2026-11-22
 1. __[BUGFIX]__ Double-click on a column's header border shrank the column only to 50 px instead of its `✓`
 1. __[FEATURE]__ "Marked" column is the first of the addon's columns in the column list
