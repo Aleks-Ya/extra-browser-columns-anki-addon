@@ -2,6 +2,7 @@
 
 ## v1.0.2 - unreleased
 1. __[FEATURE]__ Double-click on a column's header border shrinks the column to its `✓` (the header shows the beginning of the name)
+1. __[FEATURE]__ Hovering a column header shows the column name and description
 
 ## [v1.0.1](https://github.com/Aleks-Ya/extra-browser-columns-anki-addon/releases/tag/v1.0.1) - 2026-11-21
 1. __[FEATURE]__ Sortable "New", "Learning" and "Review" columns in the Browser

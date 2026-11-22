@@ -193,8 +193,10 @@ def test_fit_foreign_column(column_hooks: ColumnHooks):
     header.resizeSection.assert_not_called()
 
 
-def __show_browser(column_key: str, section_size: int) -> tuple[Callable[..., object], MagicMock]:
+def __show_browser(column_key: str, section_size: int = 50, is_note: bool = False) \
+        -> tuple[Callable[..., object], MagicMock]:
     browser: MagicMock = MagicMock()
+    browser._switch.isChecked.return_value = is_note
     model: MagicMock = browser.table._model
     model.column_at_section.return_value = MagicMock(key=column_key)
     original_header_data: MagicMock = model.headerData
@@ -232,3 +234,23 @@ def test_keep_label_text(column_hooks: ColumnHooks):
     header_data, original_header_data = __show_browser(suspended_key, section_size=50)
     assert header_data(3, Qt.Orientation.Horizontal) == "original"
     original_header_data.assert_called_once_with(3, Qt.Orientation.Horizontal, Qt.ItemDataRole.DisplayRole)
+
+
+# noinspection PyUnusedLocal
+def test_header_tooltip_cards_mode(column_hooks: ColumnHooks):
+    header_data, original_header_data = __show_browser(suspended_key)
+    assert header_data(3, Qt.Orientation.Horizontal, Qt.ItemDataRole.ToolTipRole) == "Suspended\nCard is suspended"
+    original_header_data.assert_not_called()
+
+
+# noinspection PyUnusedLocal
+def test_header_tooltip_notes_mode(column_hooks: ColumnHooks):
+    header_data, original_header_data = __show_browser(suspended_key, is_note=True)
+    assert header_data(3, Qt.Orientation.Horizontal, Qt.ItemDataRole.ToolTipRole) == \
+           "Suspended\nNote has suspended cards"
+
+
+# noinspection PyUnusedLocal
+def test_header_tooltip_foreign_column(column_hooks: ColumnHooks):
+    header_data, original_header_data = __show_browser("noteFld")
+    assert header_data(3, Qt.Orientation.Horizontal, Qt.ItemDataRole.ToolTipRole) == "original"
