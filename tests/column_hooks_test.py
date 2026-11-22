@@ -6,6 +6,7 @@ from anki.consts import CARD_TYPE_LRN, QUEUE_TYPE_LRN, CARD_TYPE_REV, QUEUE_TYPE
 from anki.notes import Note
 from aqt import gui_hooks
 from aqt.browser import Column, ItemId, CellRow, SearchContext
+from aqt.qt import Qt
 from mock.mock import MagicMock
 
 from extra_browser_columns.column_hooks import ColumnHooks
@@ -190,3 +191,44 @@ def test_fit_column_to_cells(column_hooks: ColumnHooks):
 def test_fit_foreign_column(column_hooks: ColumnHooks):
     header: MagicMock = __double_click_header_border("noteFld", content_width=18)
     header.resizeSection.assert_not_called()
+
+
+def __show_browser(column_key: str, section_size: int) -> tuple[Callable[..., object], MagicMock]:
+    browser: MagicMock = MagicMock()
+    model: MagicMock = browser.table._model
+    model.column_at_section.return_value = MagicMock(key=column_key)
+    original_header_data: MagicMock = model.headerData
+    original_header_data.return_value = "original"
+    header: MagicMock = browser.table._view.horizontalHeader.return_value
+    header.sectionSize.return_value = section_size
+    header.sectionSizeHint.return_value = 93
+    gui_hooks.browser_will_show(browser)
+    return model.headerData, original_header_data
+
+
+# noinspection PyUnusedLocal
+def test_left_align_clipped_label(column_hooks: ColumnHooks):
+    header_data, original_header_data = __show_browser(suspended_key, section_size=50)
+    assert header_data(3, Qt.Orientation.Horizontal, Qt.ItemDataRole.TextAlignmentRole) == \
+           (Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter).value
+    original_header_data.assert_not_called()
+
+
+# noinspection PyUnusedLocal
+def test_keep_alignment_of_not_clipped_label(column_hooks: ColumnHooks):
+    header_data, original_header_data = __show_browser(suspended_key, section_size=93)
+    assert header_data(3, Qt.Orientation.Horizontal, Qt.ItemDataRole.TextAlignmentRole) == "original"
+    original_header_data.assert_called_once_with(3, Qt.Orientation.Horizontal, Qt.ItemDataRole.TextAlignmentRole)
+
+
+# noinspection PyUnusedLocal
+def test_keep_alignment_of_foreign_column(column_hooks: ColumnHooks):
+    header_data, original_header_data = __show_browser("noteFld", section_size=50)
+    assert header_data(3, Qt.Orientation.Horizontal, Qt.ItemDataRole.TextAlignmentRole) == "original"
+
+
+# noinspection PyUnusedLocal
+def test_keep_label_text(column_hooks: ColumnHooks):
+    header_data, original_header_data = __show_browser(suspended_key, section_size=50)
+    assert header_data(3, Qt.Orientation.Horizontal) == "original"
+    original_header_data.assert_called_once_with(3, Qt.Orientation.Horizontal, Qt.ItemDataRole.DisplayRole)

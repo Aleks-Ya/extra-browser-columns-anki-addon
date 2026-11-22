@@ -1,11 +1,11 @@
 import logging
 from logging import Logger
-from typing import Sequence, Optional, Callable
+from typing import Sequence, Optional, Callable, Any
 
 from anki.collection import BrowserColumns, Collection
 from aqt import gui_hooks
 from aqt.browser import Browser, Column, SearchContext, ItemId, CellRow
-from aqt.qt import QTableView, QHeaderView, qconnect
+from aqt.qt import QTableView, QHeaderView, Qt, qconnect
 
 from .column_values import ColumnValues, ColumnType
 
@@ -111,6 +111,31 @@ class ColumnHooks:
         header: QHeaderView = view.horizontalHeader()
         qconnect(header.sectionHandleDoubleClicked,
                  lambda section: ColumnHooks.__fit_column_to_cells(browser, view, header, section))
+        ColumnHooks.__left_align_clipped_labels(browser, header)
+
+    @staticmethod
+    def __left_align_clipped_labels(browser: Browser, header: QHeaderView) -> None:
+        # Anki's header stylesheet prevents eliding, so a clipped centered label shows its middle ("New" -> "e"):
+        # left-align the labels of our columns that are narrower than their labels to show the beginning ("N")
+        # noinspection PyProtectedMember
+        model = browser.table._model
+        original_header_data: Callable[..., Any] = model.headerData
+        measuring: bool = False
+
+        def header_data(section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
+            nonlocal measuring
+            if role == Qt.ItemDataRole.TextAlignmentRole and orientation == Qt.Orientation.Horizontal \
+                    and not measuring and model.column_at_section(section).key in ColumnHooks.__columns:
+                measuring = True  # "sectionSizeHint" may query the alignment
+                try:
+                    is_clipped: bool = header.sectionSize(section) < header.sectionSizeHint(section)
+                finally:
+                    measuring = False
+                if is_clipped:
+                    return (Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter).value
+            return original_header_data(section, orientation, role)
+
+        model.headerData = header_data
 
     @staticmethod
     def __fit_column_to_cells(browser: Browser, view: QTableView, header: QHeaderView, section: int) -> None:
