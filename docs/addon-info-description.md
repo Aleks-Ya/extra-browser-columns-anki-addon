@@ -1,16 +1,16 @@
 **"Extra Browser Columns" addon adds 6 sortable columns to the Browser:
-"New", "Learning", "Review", "Suspended", "Buried" and "Marked".**
+"Marked", "New", "Learning", "Review", "Suspended" and "Buried".**
 
 ## Columns
 
 A column shows `✓` if the card (in Cards mode) or any card of the note (in Notes mode):
 
+- **Marked**: the note has the `marked` tag
 - **New**: is new
 - **Learning**: is in learning or relearning
 - **Review**: is in review or relearning
 - **Suspended**: is suspended
 - **Buried**: is buried (manually or by siblings)
-- **Marked**: the note has the `marked` tag
 
 The New, Learning and Review columns match the "Card State" filters of the Browser sidebar
 (`is:new`, `is:learn`, `is:review`), so a relearning card is both Learning and Review.

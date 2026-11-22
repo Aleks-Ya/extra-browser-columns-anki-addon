@@ -53,13 +53,14 @@ def test_add_columns(column_hooks: ColumnHooks):
     columns: dict[str, Column] = {}
     gui_hooks.browser_did_fetch_columns(columns)
     assert columns == {
+        marked_key: __column(marked_key, "Marked", "Note is marked", "Note is marked"),
         new_key: __column(new_key, "New", "Card is new", "Note has new cards"),
         learning_key: __column(learning_key, "Learning", "Card is in learning", "Note has learning cards"),
         review_key: __column(review_key, "Review", "Card is in review", "Note has review cards"),
         suspended_key: __column(suspended_key, "Suspended", "Card is suspended", "Note has suspended cards"),
         buried_key: __column(buried_key, "Buried", "Card is buried", "Note has buried cards"),
-        marked_key: __column(marked_key, "Marked", "Note is marked", "Note is marked"),
     }
+    assert list(columns) == [marked_key, new_key, learning_key, review_key, suspended_key, buried_key]
 
 
 def __fetch_row(item_id: ItemId, is_note: bool) -> list[str]:

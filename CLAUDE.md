@@ -4,8 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Extra Browser Columns is an Anki addon that adds sortable "New", "Learning", "Review", "Suspended",
-"Buried" and "Marked" columns to the Browser.
+Extra Browser Columns is an Anki addon that adds sortable "Marked", "New", "Learning", "Review", "Suspended"
+and "Buried" columns to the Browser.
 Target Anki version: 26.09.4.
 
 ## Git
