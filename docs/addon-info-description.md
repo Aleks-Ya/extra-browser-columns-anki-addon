@@ -29,11 +29,14 @@ Supported Anki version: 26.09.4+
 
 ## Contacts
 
-If you have a **question**, met a **bug** or have a **feature request**, create an issue at
-[GitHub bug tracker](https://github.com/Aleks-Ya/extra-browser-columns-anki-addon/issues).
+If you have a **question**, met a **bug** or have a **feature request**,
+post a message in the
+[Anki Forum](https://forums.ankiweb.net/t/extra-browser-columns-marked-new-learning-review-suspended-buried-addon-support/74671)
+or create an issue at [GitHub bug tracker](https://github.com/Aleks-Ya/extra-browser-columns-anki-addon/issues).
 
 ## Links
 
+- [Support topic at Anki Forum](https://forums.ankiweb.net/t/extra-browser-columns-marked-new-learning-review-suspended-buried-addon-support/74671)
 - [GitHub project](https://github.com/Aleks-Ya/extra-browser-columns-anki-addon)
 - [Bug tracker](https://github.com/Aleks-Ya/extra-browser-columns-anki-addon/issues)
 - [Changelog](https://github.com/Aleks-Ya/extra-browser-columns-anki-addon/blob/main/CHANGELOG.md)
