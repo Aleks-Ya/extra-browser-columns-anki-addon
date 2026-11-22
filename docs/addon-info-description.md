@@ -1,7 +1,7 @@
 **"Extra Browser Columns" addon adds 6 sortable columns to the Browser:
 "Marked", "New", "Learning", "Review", "Suspended" and "Buried".**
 
-![](https://raw.githubusercontent.com/Aleks-Ya/extra-browser-columns-anki-addon/main/docs/images/show-columns-menu-notes.png)
+![](https://raw.githubusercontent.com/Aleks-Ya/extra-browser-columns-anki-addon/main/docs/images/krita/show-columns-menu-notes.png)
 
 ## Columns
 
